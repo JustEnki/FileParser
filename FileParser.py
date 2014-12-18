@@ -27,20 +27,13 @@ class FileParser(object):
               pass
       self.lines.append(line)
    
-  def save_file(self):
+  def save_file(self, func, arg, col):
     nw_file_name = raw_input("Name the new file --> ") #Names new file name
     nw_file = open(nw_file_name + ".txt", "w") #opens new file for writing`
     for line in self.lines: #starts for loop that writes out each line
       nw_file.write(str(line)[1:-1] + '\n') #converts the lists into strings and removes the braces
     nw_file.close()
-    #ABOVE SECTION TESTED AND WORKS
     
-    nw_filepath = os.path.abspath(nw_file.name) #determines the absolute filepath for the new file`
-    print nw_filepath #error checking - the new file path works
-    for line in fileinput.input(nw_filepath, inplace=1): #used to replace the python string indicators " ' "
-      line.replace("'","") #replaces the " ' "
-    fileinput.close() #closes the new file
-
   def sum_column(self, col): #col must be an integer
     returning_value = 0
     for line in self.lines:
@@ -66,45 +59,21 @@ class FileParser(object):
   def std_dev_column(self, col):
     return self.variance_column(col)**0.5
 
-  def pivot(self,col, func, arg):
+  def pivot(self, func, arg, date):
     """This method will select a column and pivot the data by that column, it will then compute the different statistics based on that particular data point. This will be tested using the Tracking.txt file.
     """
     temp_dict = {}
     for line in self.lines:
-      temp_dict[line[col]] = func(arg)
-
-    return temp_dict
-
+      #line[date] gives me the date of the line, I want this to be the key for temp_dict
+      temp_dict[line[date]] = 0
+    for line in self.lines:
+      #line[date] gives me the date of the line, I want this to be the key for temp_dict
+      temp_dict[line[date]] = temp_dict[line[date]] + func(arg)
+ 
 if __name__ == "__main__":
 
   print "\ntesting file_obj creation\n"
-  test_fp = FileParser("Test.txt")
-  print test_fp.file_obj.read() #This will be blank because the file has already been read into a string object and not reset in the instance initialization
-
-  print "\ntesting file_lines creation\n"
-  print test_fp.file_lines #This prints a list that parsed the file string stream by '\n' characters
-
-  print "\ntesting lines creation\n"
-  print test_fp.lines #This prints a list with nested lists that have the correct type for each column (issue with date and string, don't care to figure it out now)
-
-  print "\ntesting sum column\n"
-  print test_fp.sum_column(3)
-  print test_fp.sum_column(4)
-
-  print "\ntesting average column\n"
-  print test_fp.average_column(3)
-  print test_fp.average_column(4)
-
-  print "\ntesting variance column\n"
-  print test_fp.variance_column(3)
-  print test_fp.variance_column(4)
-
-  print "\ntesting std dev column\n"
-  print test_fp.std_dev_column(3)
-  print test_fp.std_dev_column(4)
-
-  print "\ntesting pivot\n"
-  print test_fp.pivot(1, test_fp.std_dev_column, 3)
+  test_fp = FileParser("TRACKING.txt")
   
   print "\ntesting save file\n"
-  print test_fp.save_file()
+  print test_fp.save_file(test_fp.std_dev_column, 6, 0)
