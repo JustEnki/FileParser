@@ -12,4 +12,4 @@ for line in file_lines[1:]:
     for j in range(len(dict)):
       print line[i][j]
       
-      
+     
